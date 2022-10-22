@@ -1,0 +1,38 @@
+#include <ctpl/ctpl_stl.h>
+#include <filesystem>
+#include <iostream>
+#include <mutex>
+#include <numeric>
+#include <string>
+#include <vector>
+
+std::mutex outputmutex;
+ctpl::thread_pool tpool(std::thread::hardware_concurrency() * 4);
+
+auto combinewnewline = [](std::string a, std::string b) {
+  return std::move(a) + '\n' + b;
+};
+
+void processDirectory(int id, std::string &directory) {
+  std::vector<std::string> entries;
+  for (auto &entry : std::filesystem::directory_iterator(directory)) {
+    if (std::filesystem::is_directory(entry) &&
+        !std::filesystem::is_symlink(entry)) {
+      tpool.push(processDirectory, entry.path().string());
+    }
+
+    entries.push_back(std::string(entry.path()));
+  }
+
+  std::string out = std::accumulate(entries.begin(), entries.end(),
+                                    std::string(""), combinewnewline);
+  outputmutex.lock();
+  std::cout << out;
+  outputmutex.unlock();
+}
+
+int main(int argc, char **argv) {
+  char *directory = argv[1];
+  tpool.push(processDirectory, std::string(directory));
+  return 0;
+}

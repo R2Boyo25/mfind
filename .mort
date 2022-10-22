@@ -1,0 +1,18 @@
+[_default]
+out = "mfind"
+oarg = [
+    "-Ofast",
+    "-g",
+    "-std=c++17"
+]
+
+#[[deps]]
+#url = "https://github.com/muellan/clipp"
+#cpath = "include"
+#ipath = "clipp"
+
+[[deps]]
+url = "https://github.com/vit-vit/ctpl"
+cpath = "."
+ipath = "ctpl"
+exclude = ["example.cpp", "LICENSE", "README.md", "ctpl.h"]
