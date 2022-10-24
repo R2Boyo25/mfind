@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <iostream>
 #include <mutex>
+#include <regex>
 #include <sstream>
 #include <string>
 #include <sys/time.h>
@@ -15,6 +16,7 @@ extern std::vector<std::string> excludes;
 extern std::vector<std::string> mfind_buffer;
 extern std::mutex outputmutex;
 extern std::string mfind_search;
+extern std::regex re;
 
 bool hasEnding(std::string const &fullString, std::string const &ending);
 

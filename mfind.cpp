@@ -9,6 +9,7 @@ std::vector<std::string> excludes = {
 std::vector<std::string> mfind_buffer = {};
 std::mutex outputmutex;
 std::string mfind_search;
+std::regex re;
 
 bool hasEnding(std::string const &fullString, std::string const &ending) {
   if (fullString.length() >= ending.length()) {
@@ -41,17 +42,14 @@ void processDirectory(int id, std::string &directory) {
         continue;
       }
 
-      mfind_tpool.push(processDirectory, es);
+      if (std::regex_match(es, re)) {
+        mfind_tpool.push(processDirectory, es);
+      }
     }
 
     entries.push_back(es);
   }
 
-  /*std::stringstream outs;
-  for (auto &entry : entries) {
-    outs << entry << std::endl;
-  }
-  std::string out = outs.str();*/
   outputmutex.lock();
   for (auto &entry : entries) {
     mfind_buffer.push_back(entry);
@@ -59,7 +57,12 @@ void processDirectory(int id, std::string &directory) {
   outputmutex.unlock();
 }
 
+/*BROKEN FOR SOME REASON - DON'T USE*/
 void startFilesearch(std::string directory, std::string search) {
   mfind_search = search;
+  re = std::regex(mfind_search);
+  /*mfind_tpool.stop();
+  mfind_buffer = {};
+  mfind_tpool.resize(std::thread::hardware_concurrency() * 4);*/
   mfind_tpool.push(processDirectory, directory);
 }
