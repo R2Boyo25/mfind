@@ -42,12 +42,12 @@ void processDirectory(int id, std::string &directory) {
         continue;
       }
 
-      if (std::regex_match(es, re)) {
-        mfind_tpool.push(processDirectory, es);
-      }
+      mfind_tpool.push(processDirectory, es);
     }
 
-    entries.push_back(es);
+    if (std::regex_match(es, re)) {
+      entries.push_back(es);
+    }
   }
 
   outputmutex.lock();
