@@ -10,6 +10,7 @@ std::vector<std::string> mfind_buffer = {};
 std::mutex outputmutex;
 std::string mfind_search;
 std::regex re;
+bool mfind_cancel = false;
 
 bool hasEnding(std::string const &fullString, std::string const &ending) {
   if (fullString.length() >= ending.length()) {
@@ -32,22 +33,41 @@ bool hasEndings(std::string const &fullString,
 }
 
 void processDirectory(int id, std::string &directory) {
+  if (mfind_cancel) {
+    return;
+  }
+
   std::vector<std::string> entries;
   for (auto &entry : std::filesystem::directory_iterator(directory)) {
     std::string es = entry.path().string();
     if (std::filesystem::is_directory(entry) &&
         !std::filesystem::is_symlink(entry)) {
+      if (mfind_cancel) {
+        return;
+      }
 
       if (hasEndings(es, excludes)) {
         continue;
       }
 
+      if (mfind_cancel) {
+        return;
+      }
+
       mfind_tpool.push(processDirectory, es);
+    }
+
+    if (mfind_cancel) {
+      return;
     }
 
     if (std::regex_match(es, re)) {
       entries.push_back(es);
     }
+  }
+
+  if (mfind_cancel) {
+    return;
   }
 
   outputmutex.lock();

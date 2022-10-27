@@ -17,6 +17,7 @@ extern std::vector<std::string> mfind_buffer;
 extern std::mutex outputmutex;
 extern std::string mfind_search;
 extern std::regex re;
+extern bool mfind_cancel;
 
 bool hasEnding(std::string const &fullString, std::string const &ending);
 
