@@ -1,7 +1,7 @@
 #include <bits/types/struct_timespec.h>
 #include <cstdlib>
 #include <ctime>
-#include <ctpl/ctpl_stl.h>
+//#include <ctpl/ctpl_stl.h>
 #include <filesystem>
 #include <iostream>
 #include <mutex>
@@ -11,7 +11,7 @@
 #include <sys/time.h>
 #include <vector>
 
-extern ctpl::thread_pool mfind_tpool;
+//extern ctpl::thread_pool mfind_tpool;
 extern std::vector<std::string> excludes;
 extern std::vector<std::string> mfind_buffer;
 extern std::mutex outputmutex;
@@ -26,4 +26,4 @@ bool hasEndings(std::string const &fullString,
 
 void processDirectory(int id, std::string &directory);
 
-void startFilesearch(std::string directory, std::string search = "");
+void startFilesearch(std::string directory, std::string search = ".*");

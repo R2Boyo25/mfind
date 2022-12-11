@@ -3,11 +3,15 @@
 #include <cstddef>
 #include <cstdlib>
 #include <ctime>
-#include <ctpl/ctpl_stl.h>
+//#include <ctpl/ctpl_stl.h>
 #include <iostream>
 #include <string>
 #include <sys/time.h>
 #include <vector>
+
+#include <omp.h>
+
+extern int tasks_created;
 
 timespec ts;
 timespec old_ts = {0};
@@ -25,16 +29,18 @@ long getTimeDiff() {
 
 void setTime() { clock_gettime(CLOCK_REALTIME, &old_ts); }
 
-void printOut(int id) {
+void printOut() {
   int ibuffer = 0;
   int buffer_last = 0;
 
   while (true) {
     int buffers = mfind_buffer.size();
 
+    //std::cout << buffers << std::endl;
+    
     if (ibuffer < buffers) {
       if (buffers) {
-        std::cout << mfind_buffer[ibuffer++];
+        std::cout << mfind_buffer[ibuffer++] << std::endl;
       }
     }
 
@@ -49,7 +55,7 @@ void printOut(int id) {
     }
 
     if (!buffers) {
-      if (getTimeDiff() > 300000000) {
+      if (tasks_created == 0) {
         std::exit(0);
       }
     }
@@ -57,6 +63,7 @@ void printOut(int id) {
     buffer_last = buffers;
   }
 }
+
 int main(int argc, char **argv) {
   std::string directory;
   if (argc > 1) {
@@ -64,7 +71,21 @@ int main(int argc, char **argv) {
   } else {
     directory = ".";
   }
-  startFilesearch(directory);
-  // mfind_tpool.push(printOut);
+
+  mfind_search = ".*";
+
+  omp_set_num_threads(8);
+  
+#pragma omp parallel
+  {
+#pragma omp single
+    {
+#pragma omp task
+      startFilesearch(directory);
+#pragma omp task
+      printOut();
+    }
+  }
+  
   return 0;
 }

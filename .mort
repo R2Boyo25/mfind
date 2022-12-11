@@ -3,7 +3,8 @@ out = "mfind"
 oarg = [
     "-Ofast",
     "-g",
-    "-std=c++17"
+    "-std=c++17",
+    "-fopenmp"
 ]
 
 #[[deps]]
@@ -11,8 +12,8 @@ oarg = [
 #cpath = "include"
 #ipath = "clipp"
 
-[[deps]]
-url = "https://github.com/vit-vit/ctpl"
-cpath = "."
-ipath = "ctpl"
-exclude = ["example.cpp", "LICENSE", "README.md", "ctpl.h"]
+#[[deps]]
+#url = "https://github.com/vit-vit/ctpl"
+#cpath = "."
+#ipath = "ctpl"
+#exclude = ["example.cpp", "LICENSE", "README.md", "ctpl.h"]
